@@ -1,70 +1,173 @@
-# Getting Started with Create React App
+Sure! Here’s a `README.md` file for your project:
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+```markdown
+# React Auth0 Image Viewer
 
-## Available Scripts
+A React application that fetches and displays random images from an API, with role-based access control using Auth0. The application features a fixed header and footer and scales the image to fit within the available space without scrolling.
 
-In the project directory, you can run:
+## Table of Contents
 
-### `npm start`
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Running the App](#running-the-app)
+- [Deployment](#deployment)
+- [Usage](#usage)
+- [Role-Based Access Control](#role-based-access-control)
+- [Contributing](#contributing)
+- [License](#license)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Features
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- Auth0 authentication
+- Role-based access control
+- Fetch and display random images from an API
+- Responsive design for both desktop and mobile
+- Fixed header and footer
 
-### `npm test`
+## Prerequisites
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Node.js and npm
+- An Auth0 account
 
-### `npm run build`
+## Installation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/yourusername/react-auth0-image-viewer.git
+   cd react-auth0-image-viewer
+   ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+2. Install dependencies:
+   ```sh
+   npm install
+   ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Configuration
 
-### `npm run eject`
+1. Create a `.env` file in the root of the project with the following environment variables:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+   ```env
+   REACT_APP_AUTH0_DOMAIN=your-auth0-domain
+   REACT_APP_AUTH0_CLIENT_ID=your-auth0-client-id
+   REACT_APP_AUTH0_AUDIENCE=your-api-identifier
+   REACT_APP_API_URL=your-api-url
+   REACT_APP_REDIRECT_URI=http://localhost:3000
+   ```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+2. Set up Auth0 with the following configurations:
+   - Allowed Callback URLs: `http://localhost:3000`
+   - Allowed Logout URLs: `http://localhost:3000`
+   - Allowed Web Origins: `http://localhost:3000`
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+3. Add an Auth0 rule to include roles in the ID token and access token:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+   ```javascript
+   exports.onExecutePostLogin = async (event, api) => {
+     const namespace = 'https://tanjax.smit.li/roles'; // Use your own namespace
 
-## Learn More
+     // Ensure the user has roles
+     if (event.authorization) {
+       api.idToken.setCustomClaim(namespace + 'roles', event.authorization.roles);
+       api.accessToken.setCustomClaim(namespace + 'roles', event.authorization.roles);
+     }
+   };
+   ```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Running the App
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+1. Start the development server:
+   ```sh
+   npm start
+   ```
 
-### Code Splitting
+2. Open your browser and navigate to `http://localhost:3000`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Deployment
 
-### Analyzing the Bundle Size
+### Deploying to Heroku
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+1. Create a `server.js` file to serve your React app:
 
-### Making a Progressive Web App
+   ```javascript
+   const express = require('express');
+   const path = require('path');
+   const app = express();
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+   app.use(express.static(path.join(__dirname, 'build')));
 
-### Advanced Configuration
+   app.get('*', (req, res) => {
+     res.sendFile(path.join(__dirname, 'build', 'index.html'));
+   });
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+   const PORT = process.env.PORT || 5000;
+   app.listen(PORT, () => {
+     console.log(`Server is running on port ${PORT}`);
+   });
+   ```
 
-### Deployment
+2. Create a `Procfile` in the root of your project:
+   ```plaintext
+   web: node server.js
+   ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+3. Add a `start` script to your `package.json`:
+   ```json
+   "scripts": {
+     "start": "node server.js",
+     "build": "react-scripts build",
+     "test": "react-scripts test",
+     "eject": "react-scripts eject"
+   }
+   ```
 
-### `npm run build` fails to minify
+4. Install Express:
+   ```sh
+   npm install express
+   ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+5. Commit your changes and deploy to Heroku:
+   ```sh
+   git init
+   git add .
+   git commit -m "Initial commit"
+   heroku create your-app-name
+   git push heroku main
+   ```
+
+6. Set environment variables on Heroku:
+   ```sh
+   heroku config:set REACT_APP_AUTH0_DOMAIN=your-auth0-domain
+   heroku config:set REACT_APP_AUTH0_CLIENT_ID=your-auth0-client-id
+   heroku config:set REACT_APP_AUTH0_AUDIENCE=your-api-identifier
+   heroku config:set REACT_APP_API_URL=your-api-url
+   heroku config:set REACT_APP_REDIRECT_URI=https://your-app-name.herokuapp.com
+   ```
+
+7. Open your application:
+   ```sh
+   heroku open
+   ```
+
+## Usage
+
+- Log in using the Auth0 authentication.
+- Depending on your role, you will see different components:
+  - Users with the `user` or `reviewer` role can view images.
+  - Only users with the `reviewer` role can see the footer buttons.
+
+## Role-Based Access Control
+
+- **Roles Required to View Image**: `user` or `reviewer`
+- **Roles Required to See Footer Buttons**: `reviewer`
+
+Roles are added to the ID token and access token using an Auth0 rule. Ensure that your Auth0 application is configured correctly to include these roles.
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request for any changes.
+
+## License
+
+This project is licensed under the MIT License.
