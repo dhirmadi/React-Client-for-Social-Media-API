@@ -14,22 +14,24 @@ const App = () => {
   return (
     <Router>
       <div className="app-container">
-        <div className="header-footer">
-          {!isAuthenticated ? (
-            <button className="auth-button" onClick={() => loginWithRedirect()}>Log In</button>
-          ) : (
-            <button className="auth-button" onClick={handleLogout}>Log Out</button>
-          )}
+        <div className="header">
+          <div className="auth-button-container">
+            {!isAuthenticated ? (
+              <button className="auth-button" onClick={() => loginWithRedirect()}>Log In</button>
+            ) : (
+              <button className="auth-button" onClick={handleLogout}>Log Out</button>
+            )}
+          </div>
         </div>
         <div className="content">
           {isAuthenticated && <RandomImage />}
         </div>
-        <div className="header-footer footer">
+        <div className="footer">
           {isAuthenticated && (
             <div className="button-container">
-              <button className="footer-button">Approve</button>
-              <button className="footer-button">Repair</button>
-              <button className="footer-button">Remove</button>
+              <button className="footer-button">Publish</button>
+              <button className="footer-button">Change</button>
+              <button className="footer-button">Discard</button>
             </div>
           )}
         </div>
@@ -41,13 +43,13 @@ const App = () => {
 const domain = process.env.REACT_APP_AUTH0_DOMAIN;
 const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
 const audience = process.env.REACT_APP_AUTH0_AUDIENCE;
+const redirectUri = process.env.REACT_APP_REDIRECT_URI || window.location.origin;
 
 const RootApp = () => (
   <Auth0Provider
     domain={domain}
     clientId={clientId}
-    redirectUri={window.location.origin}
-    audience={audience}
+    authorizationParams={{ redirect_uri: redirectUri, audience }}
   >
     <App />
   </Auth0Provider>

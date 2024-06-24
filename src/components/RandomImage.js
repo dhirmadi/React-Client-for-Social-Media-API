@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
+import './RandomImage.css';
 
-const RandomImages = () => {
+const RandomImage = () => {
   const { getAccessTokenSilently, isAuthenticated, loginWithRedirect } = useAuth0();
   const [imageData, setImageData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -35,15 +36,9 @@ const RandomImages = () => {
   }, [isAuthenticated, loginWithRedirect]);
 
   return (
-    <div style={{ position: 'relative', textAlign: 'center' }}>
+    <div className="image-container">
       {loading && (
-        <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          zIndex: 2
-        }}>
+        <div className="spinner">
           <ClipLoader color="#000" loading={loading} size={50} />
         </div>
       )}
@@ -52,7 +47,7 @@ const RandomImages = () => {
           src={imageData.image_url}
           alt={imageData.id}
           onClick={fetchImage}
-          style={{ cursor: 'pointer', opacity: loading ? 0.5 : 1 }}
+          className={loading ? 'loading' : ''}
         />
       )}
       {!imageData && !loading && (
@@ -62,4 +57,4 @@ const RandomImages = () => {
   );
 };
 
-export default RandomImages;
+export default RandomImage;
