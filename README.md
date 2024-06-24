@@ -65,7 +65,7 @@ A React application that fetches and displays random images from an API, with ro
 
    ```javascript
    exports.onExecutePostLogin = async (event, api) => {
-     const namespace = 'https://tanjax.smit.li/roles'; // Use your own namespace
+     const namespace = 'https://app.domain.com/roles'; // Use your own namespace
 
      // Ensure the user has roles
      if (event.authorization) {
