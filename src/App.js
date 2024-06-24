@@ -15,7 +15,6 @@ const App = () => {
         try {
           const token = await getAccessTokenSilently();
           const decodedToken = jwtDecode(token);
-          console.log('Decoded Token:', decodedToken);
           const userRoles = decodedToken['https://tanjax.smit.li/roles']; // Use the correct namespace for your roles
           setRoles(userRoles || []);
         } catch (error) {
