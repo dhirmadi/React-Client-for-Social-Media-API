@@ -3,11 +3,15 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import RandomImage from './components/RandomImage';
 import { jwtDecode } from 'jwt-decode';
+import axios from 'axios';
 import './App.css';
 
 const App = () => {
   const { isAuthenticated, loginWithRedirect, logout, getAccessTokenSilently } = useAuth0();
   const [roles, setRoles] = useState([]);
+  const [imageId, setImageId] = useState(null);
+  const apiUrl = process.env.REACT_APP_API_URL;
+  const [fetchImage, setFetchImage] = useState(() => () => {});
 
   useEffect(() => {
     const fetchRoles = async () => {
@@ -15,6 +19,7 @@ const App = () => {
         try {
           const token = await getAccessTokenSilently();
           const decodedToken = jwtDecode(token);
+          console.log('Decoded Token:', decodedToken);
           const userRoles = decodedToken['https://tanjax.smit.li/roles']; // Use the correct namespace for your roles
           setRoles(userRoles || []);
         } catch (error) {
@@ -28,6 +33,31 @@ const App = () => {
 
   const handleLogout = () => {
     logout({ returnTo: window.location.origin });
+  };
+
+  const handleAction = async (action) => {
+    try {
+      const token = await getAccessTokenSilently();
+      const payload = { action, uniqueID: imageId };
+      console.log('Sending payload:', payload);
+      const response = await axios.post(
+        `${apiUrl}/move`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log('Server response:', response);
+      // Fetch a new image after performing the action
+      fetchImage();
+    } catch (error) {
+      console.error(`Error performing ${action} action:`, error);
+      if (error.response) {
+        console.error('Error response data:', error.response.data);
+      }
+    }
   };
 
   const isReviewer = roles.includes('reviewer');
@@ -46,14 +76,14 @@ const App = () => {
           </div>
         </div>
         <div className="content">
-          {isAuthenticated && canViewImage && <RandomImage />}
+          {isAuthenticated && canViewImage && <RandomImage setImageId={setImageId} setFetchImage={setFetchImage} />}
         </div>
         <div className="footer">
           {isAuthenticated && isReviewer && (
             <div className="button-container">
-              <button className="footer-button">Publish</button>
-              <button className="footer-button">Change</button>
-              <button className="footer-button">Discard</button>
+              <button className="footer-button" onClick={() => handleAction('approve')}>Publish</button>
+              <button className="footer-button" onClick={() => handleAction('rework')}>Change</button>
+              <button className="footer-button" onClick={() => handleAction('delete')}>Discard</button>
             </div>
           )}
         </div>

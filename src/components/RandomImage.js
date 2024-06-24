@@ -4,7 +4,7 @@ import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
 import './RandomImage.css';
 
-const RandomImage = () => {
+const RandomImage = ({ setImageId, setFetchImage }) => {
   const { getAccessTokenSilently, isAuthenticated, loginWithRedirect } = useAuth0();
   const [imageData, setImageData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -20,20 +20,22 @@ const RandomImage = () => {
         },
       });
       setImageData(response.data);
+      setImageId(response.data.id); // Pass the image ID to the parent component
     } catch (error) {
       console.error('Error fetching the image:', error);
     } finally {
       setLoading(false);
     }
-  }, [apiUrl, getAccessTokenSilently]);
+  }, [apiUrl, getAccessTokenSilently, setImageId]);
 
   useEffect(() => {
     if (isAuthenticated) {
       fetchImage();
+      setFetchImage(() => fetchImage); // Set the fetchImage function in the parent component
     } else {
       loginWithRedirect();
     }
-  }, [isAuthenticated, loginWithRedirect, fetchImage]);
+  }, [isAuthenticated, loginWithRedirect, fetchImage, setFetchImage]);
 
   return (
     <div className="image-container">
