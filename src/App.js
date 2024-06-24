@@ -1,15 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import RandomImage from './components/RandomImage';
+import { jwtDecode } from 'jwt-decode';
 import './App.css';
 
 const App = () => {
-  const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
+  const { isAuthenticated, loginWithRedirect, logout, getAccessTokenSilently } = useAuth0();
+  const [roles, setRoles] = useState([]);
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      if (isAuthenticated) {
+        try {
+          const token = await getAccessTokenSilently();
+          const decodedToken = jwtDecode(token);
+          console.log('Decoded Token:', decodedToken);
+          const userRoles = decodedToken['https://tanjax.smit.li/roles']; // Use the correct namespace for your roles
+          setRoles(userRoles || []);
+        } catch (error) {
+          console.error('Error fetching user roles:', error);
+        }
+      }
+    };
+
+    fetchRoles();
+  }, [isAuthenticated, getAccessTokenSilently]);
 
   const handleLogout = () => {
     logout({ returnTo: window.location.origin });
   };
+
+  const isReviewer = roles.includes('reviewer');
+  const canViewImage = roles.includes('user') || roles.includes('reviewer');
 
   return (
     <Router>
@@ -24,10 +47,10 @@ const App = () => {
           </div>
         </div>
         <div className="content">
-          {isAuthenticated && <RandomImage />}
+          {isAuthenticated && canViewImage && <RandomImage />}
         </div>
         <div className="footer">
-          {isAuthenticated && (
+          {isAuthenticated && isReviewer && (
             <div className="button-container">
               <button className="footer-button">Publish</button>
               <button className="footer-button">Change</button>

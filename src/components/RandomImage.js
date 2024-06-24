@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
@@ -10,7 +10,7 @@ const RandomImage = () => {
   const [loading, setLoading] = useState(false);
   const apiUrl = process.env.REACT_APP_API_URL;
 
-  const fetchImage = async () => {
+  const fetchImage = useCallback(async () => {
     try {
       setLoading(true);
       const token = await getAccessTokenSilently();
@@ -25,7 +25,7 @@ const RandomImage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [apiUrl, getAccessTokenSilently]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -33,7 +33,7 @@ const RandomImage = () => {
     } else {
       loginWithRedirect();
     }
-  }, [isAuthenticated, loginWithRedirect]);
+  }, [isAuthenticated, loginWithRedirect, fetchImage]);
 
   return (
     <div className="image-container">
