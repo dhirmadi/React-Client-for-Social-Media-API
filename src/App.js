@@ -11,6 +11,7 @@ const App = () => {
   const [roles, setRoles] = useState([]);
   const [imageId, setImageId] = useState(null);
   const apiUrl = process.env.REACT_APP_API_URL;
+  const apiNamespace = process.env.REACT_APP_API_NAMESPACE;
   const [fetchImage, setFetchImage] = useState(() => () => {});
 
   useEffect(() => {
@@ -18,9 +19,10 @@ const App = () => {
       if (isAuthenticated) {
         try {
           const token = await getAccessTokenSilently();
+          console.log('Coded Token:', token); 
           const decodedToken = jwtDecode(token);
           console.log('Decoded Token:', decodedToken);
-          const userRoles = decodedToken['https://tanjax.smit.li/roles']; // Use the correct namespace for your roles
+          const userRoles = decodedToken[apiNamespace]; // Use the correct namespace for your roles
           setRoles(userRoles || []);
         } catch (error) {
           console.error('Error fetching user roles:', error);
