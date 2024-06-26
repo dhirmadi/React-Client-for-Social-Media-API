@@ -41,8 +41,7 @@ const App = () => {
     try {
       const token = await getAccessTokenSilently();
       const payload = { action, uniqueID: imageId };
-      console.log('Sending payload:', payload);
-      const response = await axios.post(
+      axios.post(
         `${apiUrl}/move`,
         payload,
         {
@@ -50,15 +49,18 @@ const App = () => {
             Authorization: `Bearer ${token}`,
           },
         }
-      );
-      console.log('Server response:', response);
-      // Fetch a new image after performing the action
+      ).then(response => {
+        // Handle success if needed
+      }).catch(error => {
+        console.error(`Error performing ${action} action:`, error);
+        if (error.response) {
+          console.error('Error response data:', error.response.data);
+        }
+      });
+      // Fetch a new image immediately without waiting for the action to complete
       fetchImage();
     } catch (error) {
-      console.error(`Error performing ${action} action:`, error);
-      if (error.response) {
-        console.error('Error response data:', error.response.data);
-      }
+      console.error(`Error getting access token:`, error);
     }
   };
 
