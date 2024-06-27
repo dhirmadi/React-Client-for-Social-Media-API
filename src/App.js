@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router,Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import RandomImage from './components/RandomImage';
-import NavBar from './components/NavBar';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import './App.css';
@@ -71,44 +70,20 @@ const App = () => {
   return (
     <Router>
       <div className="app-container">
-      <NavBar
-        isAuthenticated={isAuthenticated}
-        canViewImage={canViewImage}
-        isReviewer={isReviewer}
-        loginWithRedirect={loginWithRedirect}
-        handleLogout={handleLogout}
-      />
-      <div className="content">
-        <Routes>
-          <Route path="/" element={
-            <>
-              {isAuthenticated && canViewImage && <RandomImage action="default" setImageId={setImageId} setFetchImage={setFetchImage} />}
-            </>
-          } />
-          <Route path="/review" element={
-            <>
-              {isAuthenticated && isReviewer && <RandomImage action="review" setImageId={setImageId} setFetchImage={setFetchImage} />}
-            </>
-          } />
-          <Route path="/approve" element={
-            <>
-              {isAuthenticated && canViewImage && <RandomImage action="approve" setImageId={setImageId} setFetchImage={setFetchImage} />}
-            </>
-          } />
-          <Route path="/rework" element={
-            <>
-              {isAuthenticated && isReviewer && <RandomImage action="rework" setImageId={setImageId} setFetchImage={setFetchImage} />}
-            </>
-          } />
-          <Route path="/delete" element={
-            <>
-              {isAuthenticated && isReviewer && <RandomImage action="delete" setImageId={setImageId} setFetchImage={setFetchImage} />}
-            </>
-          } />
-        </Routes>
-      </div>
+        <div className="header">
+          <div className="auth-button-container">
+            {!isAuthenticated ? (
+              <button className="auth-button" onClick={() => loginWithRedirect()}>Log In</button>
+            ) : (
+              <button className="auth-button" onClick={handleLogout}>Log Out</button>
+            )}
+          </div>
+        </div>
+        <div className="content">
+          {isAuthenticated && canViewImage && <RandomImage setImageId={setImageId} setFetchImage={setFetchImage} />}
+        </div>
         <div className="footer">
-          { isAuthenticated && isReviewer && (
+          {isAuthenticated && isReviewer && (
             <div className="button-container">
               <button className="footer-button" onClick={() => handleAction('approve')}>Publish</button>
               <button className="footer-button" onClick={() => handleAction('rework')}>Change</button>

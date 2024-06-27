@@ -2,20 +2,16 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
+import './RandomImage.css';
 
-const RandomImage = ({ setImageId, setFetchImage, action = 'default' }) => { // Assume action is passed as a prop or manage it internally
+const RandomImage = ({ setImageId, setFetchImage }) => {
   const { getAccessTokenSilently, isAuthenticated, loginWithRedirect } = useAuth0();
   const [imageData, setImageData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [tempImageData, setTempImageData] = useState(null);
+  const [loading, setLoading] = useState(true); // Start with loading true to show spinner initially
+  const [tempImageData, setTempImageData] = useState(null); // Temporary state to hold new image data
   const apiUrl = process.env.REACT_APP_API_URL;
 
   const fetchImage = useCallback(async () => {
-    if (!isAuthenticated) {
-      loginWithRedirect();
-      return;
-    }
-  
     try {
       setLoading(true);
       const token = await getAccessTokenSilently();
@@ -23,27 +19,27 @@ const RandomImage = ({ setImageId, setFetchImage, action = 'default' }) => { // 
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        params: {
-          action, // Include the action in the API request
-        },
       });
-      setTempImageData(response.data);
-      setLoading(false); // Move setLoading(false) here to ensure it's called only after data is fetched
+      setTempImageData(response.data); // Set the temporary image data
     } catch (error) {
       console.error('Error fetching the image:', error);
-      setLoading(false);
+      setLoading(false); // Stop loading on error
     }
-  }, [apiUrl, getAccessTokenSilently, action, isAuthenticated, loginWithRedirect]); // Include isAuthenticated and loginWithRedirect in dependencies
-  
+  }, [apiUrl, getAccessTokenSilently]);
+
   useEffect(() => {
+    if (isAuthenticated) {
       fetchImage();
-      setFetchImage(() => fetchImage);
-      }, [fetchImage, setFetchImage]);
+      setFetchImage(() => fetchImage); // Set the fetchImage function in the parent component
+    } else {
+      loginWithRedirect();
+    }
+  }, [isAuthenticated, loginWithRedirect, fetchImage, setFetchImage]);
 
   const handleImageLoad = () => {
-    setImageData(tempImageData);
-    setImageId(tempImageData.id);
-    setLoading(false);
+    setImageData(tempImageData); // Update the actual image data when the image has loaded
+    setImageId(tempImageData.id); // Pass the image ID to the parent component
+    setLoading(false); // Update state when image is loaded
   };
 
   return (
@@ -59,7 +55,7 @@ const RandomImage = ({ setImageId, setFetchImage, action = 'default' }) => { // 
           alt={tempImageData.id}
           onLoad={handleImageLoad}
           onClick={!loading ? fetchImage : undefined}
-          style={{ display: loading ? 'none' : 'block', maxWidth: '100%', height: 'auto' }}
+          style={{ display: loading ? 'none' : 'block', maxWidth: '100%', height: 'auto' }} // Hide image until fully loaded
         />
       )}
     </div>
