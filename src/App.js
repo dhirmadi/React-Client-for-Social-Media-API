@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import RandomImage from './components/RandomImage';
@@ -10,18 +10,17 @@ const App = () => {
   const { isAuthenticated, loginWithRedirect, logout, getAccessTokenSilently } = useAuth0();
   const [roles, setRoles] = useState([]);
   const [imageId, setImageId] = useState(null);
+  const [fetchImage, setFetchImage] = useState(() => () => {});
   const apiUrl = process.env.REACT_APP_API_URL;
   const apiNamespace = process.env.REACT_APP_API_NAMESPACE;
-  const [fetchImage, setFetchImage] = useState(() => () => {});
+  const randomImageRef = useRef(null);
 
   useEffect(() => {
     const fetchRoles = async () => {
       if (isAuthenticated) {
         try {
           const token = await getAccessTokenSilently();
-          console.log('Coded Token:', token); 
           const decodedToken = jwtDecode(token);
-          console.log('Decoded Token:', decodedToken);
           const userRoles = decodedToken[apiNamespace]; // Use the correct namespace for your roles
           setRoles(userRoles || []);
         } catch (error) {
@@ -31,7 +30,7 @@ const App = () => {
     };
 
     fetchRoles();
-  }, [isAuthenticated, getAccessTokenSilently,apiNamespace]);
+  }, [isAuthenticated, getAccessTokenSilently, apiNamespace]);
 
   const handleLogout = () => {
     logout({ returnTo: window.location.origin });
@@ -39,6 +38,11 @@ const App = () => {
 
   const handleAction = async (action) => {
     try {
+      // Set loading to true before API call
+      if (randomImageRef.current) {
+        randomImageRef.current.setLoading(true);
+      }
+
       const token = await getAccessTokenSilently();
       const payload = { action, uniqueID: imageId };
       await axios.post(
@@ -75,7 +79,9 @@ const App = () => {
           </div>
         </div>
         <div className="content">
-          {isAuthenticated && canViewImage && <RandomImage setImageId={setImageId} setFetchImage={setFetchImage} />}
+          {isAuthenticated && canViewImage && (
+            <RandomImage ref={randomImageRef} setImageId={setImageId} setFetchImage={setFetchImage} />
+          )}
         </div>
         <div className="footer">
           {isAuthenticated && isReviewer && (

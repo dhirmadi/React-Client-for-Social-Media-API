@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
 import './RandomImage.css';
 
-const RandomImage = ({ setImageId, setFetchImage }) => {
+const RandomImage = forwardRef(({ setImageId, setFetchImage }, ref) => {
   const { getAccessTokenSilently, isAuthenticated, loginWithRedirect } = useAuth0();
   const [imageData, setImageData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -21,7 +21,6 @@ const RandomImage = ({ setImageId, setFetchImage }) => {
 
   const fetchImage = useCallback(async () => {
     try {
-      setLoading(true); // Start loading
       const token = await getAccessTokenSilently();
       const response = await axios.get(`${apiUrl}/image`, {
         headers: {
@@ -51,8 +50,13 @@ const RandomImage = ({ setImageId, setFetchImage }) => {
     }
   }, [isAuthenticated, loginWithRedirect, fetchImage, setFetchImage]);
 
+  useImperativeHandle(ref, () => ({
+    setLoading
+  }));
+
   const handleClick = () => {
     if (!loading) {
+      setLoading(true); // Show the spinner immediately
       fetchImage(); // Load a new image when clicked, if not currently loading
     }
   };
@@ -74,6 +78,6 @@ const RandomImage = ({ setImageId, setFetchImage }) => {
       )}
     </div>
   );
-};
+});
 
 export default RandomImage;
