@@ -31,7 +31,7 @@ const App = () => {
     };
 
     fetchRoles();
-  }, [isAuthenticated, getAccessTokenSilently]);
+  }, [isAuthenticated, getAccessTokenSilently,apiNamespace]);
 
   const handleLogout = () => {
     logout({ returnTo: window.location.origin });
@@ -41,7 +41,7 @@ const App = () => {
     try {
       const token = await getAccessTokenSilently();
       const payload = { action, uniqueID: imageId };
-      axios.post(
+      await axios.post(
         `${apiUrl}/move`,
         payload,
         {
@@ -49,18 +49,13 @@ const App = () => {
             Authorization: `Bearer ${token}`,
           },
         }
-      ).then(response => {
-        // Handle success if needed
-      }).catch(error => {
-        console.error(`Error performing ${action} action:`, error);
-        if (error.response) {
-          console.error('Error response data:', error.response.data);
-        }
-      });
-      // Fetch a new image immediately without waiting for the action to complete
-      fetchImage();
+      );
+      fetchImage(); // Fetch a new image after the action is completed
     } catch (error) {
-      console.error(`Error getting access token:`, error);
+      console.error(`Error performing ${action} action:`, error);
+      if (error.response) {
+        console.error('Error response data:', error.response.data);
+      }
     }
   };
 

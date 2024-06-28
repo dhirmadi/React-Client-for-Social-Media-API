@@ -8,7 +8,6 @@ const RandomImage = ({ setImageId, setFetchImage }) => {
   const { getAccessTokenSilently, isAuthenticated, loginWithRedirect } = useAuth0();
   const [imageData, setImageData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [tempImageData, setTempImageData] = useState(null);
   const apiUrl = process.env.REACT_APP_API_URL;
 
   const preloadImage = useCallback((url) => {
@@ -29,32 +28,28 @@ const RandomImage = ({ setImageId, setFetchImage }) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      setTempImageData(response.data); // Update tempImageData with the fetched image data
 
       // Preload the image in the background
       await preloadImage(response.data.image_url);
 
       // Image is preloaded, update state
+      setImageData(response.data); // Update the actual image data when the image is preloaded
+      setImageId(response.data.id); // Pass the image ID to the parent component
       setLoading(false);
     } catch (error) {
       console.error('Error fetching the image:', error);
       setLoading(false); // Stop loading on error
     }
-  }, [apiUrl, getAccessTokenSilently, preloadImage]);
+  }, [apiUrl, getAccessTokenSilently, preloadImage, setImageId]);
 
   useEffect(() => {
     if (isAuthenticated) {
       fetchImage();
-      setFetchImage(fetchImage); // Set the fetchImage function in the parent component
+      setFetchImage(() => fetchImage); // Set the fetchImage function in the parent component
     } else {
       loginWithRedirect();
     }
   }, [isAuthenticated, loginWithRedirect, fetchImage, setFetchImage]);
-
-  const handleImageLoad = () => {
-    setImageData(tempImageData); // Update the actual image data when the image has loaded
-    setImageId(tempImageData.id); // Pass the image ID to the parent component
-  };
 
   const handleClick = () => {
     if (!loading) {
@@ -69,11 +64,10 @@ const RandomImage = ({ setImageId, setFetchImage }) => {
           <ClipLoader color="#000" loading={loading} size={150} />
         </div>
       )}
-      {tempImageData && !loading && (
+      {imageData && !loading && (
         <img
-          src={tempImageData.image_url}
-          alt={tempImageData.id}
-          onLoad={handleImageLoad}
+          src={imageData.image_url}
+          alt={imageData.id}
           onClick={handleClick}
           style={{ maxWidth: '100%', height: 'auto', cursor: 'pointer' }}
         />
