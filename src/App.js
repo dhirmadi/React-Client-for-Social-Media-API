@@ -3,6 +3,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import RandomImage from './components/RandomImage';
 import HeaderNav from './components/HeavderNav';
+import FooterNav from './components/FooterNav';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import './App.css';
@@ -70,7 +71,7 @@ const App = () => {
   return (
     <Router>
       <div className="app-container">
-      <HeaderNav 
+        <HeaderNav 
           isAuthenticated={isAuthenticated} 
           loginWithRedirect={loginWithRedirect} 
           handleLogout={handleLogout} 
@@ -81,13 +82,11 @@ const App = () => {
           )}
         </div>
         <div className="footer">
-          {isAuthenticated && isReviewer && (
-            <div className="button-container">
-              <button className="footer-button" onClick={() => handleAction('approve')}>Publish</button>
-              <button className="footer-button" onClick={() => handleAction('rework')}>Change</button>
-              <button className="footer-button" onClick={() => handleAction('delete')}>Discard</button>
-            </div>
-          )}
+          <FooterNav
+            isAuthenticated={isAuthenticated}
+            isReviewer={isReviewer}
+            handleAction={handleAction}
+          />
         </div>
       </div>
     </Router>
