@@ -1,0 +1,41 @@
+/* Increased specificity and ensured list-style is none with !important */
+.header .nav-items {
+    list-style: none !important; /* Ensures bullet points are removed */
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+  }
+  
+  .header .nav-items li a {
+    text-decoration: none;
+    color: black; /* Changed text color to black */
+    font-size: 16px;
+    padding: 10px 15px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    background-color: #f8f9fa; /* Added light grey background */
+    font-family: 'Arial', sans-serif; /* Example font */
+    font-size: 16px;
+  }
+  
+  .header .nav-items li a:hover,
+  .header .nav-items li a:focus {
+      background-color: #e7e7e7; /* Slightly darker grey on hover/focus for contrast */
+      border-color: #ddd;
+      color: black; /* Ensure text remains black on hover/focus */
+  }
+  
+  /* Ensure the auth-button styles are applied correctly */
+  .header .auth-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .header .auth-button:hover {
+    background-color: #0056b3;
+  }

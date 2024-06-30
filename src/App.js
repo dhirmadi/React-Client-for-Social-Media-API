@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import RandomImage from './components/RandomImage';
-import HeaderNav from './components/HeavderNav';
+import HeaderNav from './components/HeaderNav';
 import FooterNav from './components/FooterNav';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';

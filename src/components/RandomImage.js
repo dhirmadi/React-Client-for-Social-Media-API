@@ -43,7 +43,7 @@ const RandomImage = forwardRef(({ setImageId, setFetchImage, folder }, ref) => {
       console.error('Error fetching the image:', error);
       setLoading(false); // Stop loading on error
     }
-  }, [apiUrl, getAccessTokenSilently, preloadImage, setImageId]);
+  }, [apiUrl, getAccessTokenSilently, preloadImage, setImageId, folder]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -77,6 +77,7 @@ const RandomImage = forwardRef(({ setImageId, setFetchImage, folder }, ref) => {
           src={imageData.image_url}
           alt={imageData.id}
           onClick={handleClick}
+          onMouseOver={() => console.log(imageData.image_url)} // Added onMouseOver event to log the image name
           style={{ maxWidth: '100%', height: 'auto', cursor: 'pointer' }}
         />
       )}
