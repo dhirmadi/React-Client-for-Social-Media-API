@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import RandomImage from './components/RandomImage';
 import HeaderNav from './components/HeavderNav';
@@ -78,7 +78,13 @@ const App = () => {
         />
         <div className="content">
           {isAuthenticated && canViewImage && (
-            <RandomImage ref={randomImageRef} setImageId={setImageId} setFetchImage={setFetchImage} />
+            <Routes>
+              <Route path="/" element={<RandomImage ref={randomImageRef} setImageId={setImageId} setFetchImage={setFetchImage} folder="default"/>} />
+              <Route path="/review" element={<RandomImage ref={randomImageRef} setImageId={setImageId} setFetchImage={setFetchImage} folder="review"/>} />
+              <Route path="/approve" element={<RandomImage ref={randomImageRef} setImageId={setImageId} setFetchImage={setFetchImage} folder="approve"/>} />
+              <Route path="/delete" element={<RandomImage ref={randomImageRef} setImageId={setImageId} setFetchImage={setFetchImage} folder="delete"/>} />
+              <Route path="/rework" element={<RandomImage ref={randomImageRef} setImageId={setImageId} setFetchImage={setFetchImage} folder="rework"/>} />
+            </Routes>
           )}
         </div>
         <div className="footer">

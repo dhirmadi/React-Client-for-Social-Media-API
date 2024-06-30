@@ -4,7 +4,7 @@ import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
 import './RandomImage.css';
 
-const RandomImage = forwardRef(({ setImageId, setFetchImage }, ref) => {
+const RandomImage = forwardRef(({ setImageId, setFetchImage, folder }, ref) => {
   const { getAccessTokenSilently, isAuthenticated, loginWithRedirect } = useAuth0();
   const [imageData, setImageData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -26,7 +26,11 @@ const RandomImage = forwardRef(({ setImageId, setFetchImage }, ref) => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        params: {
+          action: folder, // Include the folder as an action parameter
+        },
       });
+      
 
       // Preload the image in the background
       await preloadImage(response.data.image_url);
@@ -48,7 +52,7 @@ const RandomImage = forwardRef(({ setImageId, setFetchImage }, ref) => {
     } else {
       loginWithRedirect();
     }
-  }, [isAuthenticated, loginWithRedirect, fetchImage, setFetchImage]);
+  }, [isAuthenticated, loginWithRedirect, fetchImage, setFetchImage, folder]);
 
   useImperativeHandle(ref, () => ({
     setLoading
