@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import RandomImage from './components/RandomImage';
+import HeaderNav from './components/HeavderNav';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import './App.css';
@@ -69,15 +70,11 @@ const App = () => {
   return (
     <Router>
       <div className="app-container">
-        <div className="header">
-          <div className="auth-button-container">
-            {!isAuthenticated ? (
-              <button className="auth-button" onClick={() => loginWithRedirect()}>Log In</button>
-            ) : (
-              <button className="auth-button" onClick={handleLogout}>Log Out</button>
-            )}
-          </div>
-        </div>
+      <HeaderNav 
+          isAuthenticated={isAuthenticated} 
+          loginWithRedirect={loginWithRedirect} 
+          handleLogout={handleLogout} 
+        />
         <div className="content">
           {isAuthenticated && canViewImage && (
             <RandomImage ref={randomImageRef} setImageId={setImageId} setFetchImage={setFetchImage} />
