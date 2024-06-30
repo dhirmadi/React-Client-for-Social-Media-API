@@ -12,7 +12,7 @@ const HeaderNav = ({ isAuthenticated, loginWithRedirect, handleLogout }) => {
           <nav className="nav-container">
             <ul className="nav-items">
               <li className="nav-item"><Link className="nav-link" to="/">Home</Link></li> {/* Use Link */}
-              <li className="nav-item"><Link className="nav-link" to="/review">Select</Link></li> {/* Use Link */}
+              <li className="nav-item"><Link className="nav-link" to="/review">Review</Link></li> {/* Use Link */}
               <li className="nav-item"><Link className="nav-link" to="/approve">Publish</Link></li> {/* Use Link */}
               <li className="nav-item"><Link className="nav-link" to="/rework">Comment</Link></li> {/* Use Link */}
               <li className="nav-item"><Link className="nav-link" to="/delete">Recover</Link></li> {/* Use Link */}
