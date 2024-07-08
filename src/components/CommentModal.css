@@ -1,0 +1,48 @@
+/* Modal Backdrop */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Center the modal content vertically and horizontally */
+  z-index: 1050; /* High z-index to ensure it's on top */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fff; /* Contrast against the backdrop */
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  z-index: 1051; /* Ensures modal content is above the overlay */
+  width: auto; /* Adjust based on content or set a fixed width */
+  max-width: 500px; /* Maximum width of the modal */
+  border-radius: 8px; /* Optional: adds rounded corners */
+}
+
+/* Additional styles for form elements and buttons for aesthetics */
+.modal-content input[type="text"],
+.modal-content textarea {
+  width: 100%; /* Full width */
+  margin-bottom: 10px; /* Spacing between fields */
+  padding: 8px; /* Padding inside the input fields */
+  border: 1px solid #ccc; /* Border color */
+  border-radius: 4px; /* Optional: rounded corners for inputs */
+}
+
+.modal-content button {
+  margin-right: 10px; /* Spacing between buttons */
+  padding: 10px 20px; /* Padding inside buttons */
+  border: none; /* Remove default border */
+  background-color: #007bff; /* Example: blue background */
+  color: white; /* Text color */
+  cursor: pointer; /* Pointer cursor on hover */
+  border-radius: 4px; /* Optional: rounded corners for buttons */
+}
+
+.modal-content button[type="button"] {
+  background-color: #6c757d; /* Different color for the close button */
+}

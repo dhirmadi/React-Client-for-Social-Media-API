@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom'; // Import useLocation
 
-function FooterNav({ isAuthenticated, isReviewer, handleAction, removeAction }) {
+function FooterNav({ isAuthenticated, isReviewer, handleAction, removeAction, toggleModal}) {
   const location = useLocation(); // Use useLocation to get the current location
 
   if (!isAuthenticated || !isReviewer) {
@@ -21,7 +21,7 @@ function FooterNav({ isAuthenticated, isReviewer, handleAction, removeAction }) 
       case '/approve':
         // Example buttons for publishing
         return (
-          <button className="footer-button">No function</button>
+          <button className="footer-button" onClick={toggleModal}>Comment</button>
         );      
       case '/rework':
         // Example buttons for commenting

@@ -4,6 +4,7 @@ import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import RandomImage from './components/RandomImage';
 import HeaderNav from './components/HeaderNav';
 import FooterNav from './components/FooterNav';
+import CommentModal from './components/CommentModal';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import './App.css';
@@ -13,6 +14,8 @@ const App = () => {
   const [roles, setRoles] = useState([]);
   const [imageId, setImageId] = useState(null);
   const [fetchImage, setFetchImage] = useState(() => () => {});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const toggleModal = () => setIsModalOpen(!isModalOpen);
   const apiUrl = process.env.REACT_APP_API_URL;
   const apiNamespace = process.env.REACT_APP_API_NAMESPACE;
   const randomImageRef = useRef(null);
@@ -25,6 +28,7 @@ const App = () => {
           const decodedToken = jwtDecode(token);
           const userRoles = decodedToken[apiNamespace]; // Use the correct namespace for your roles
           setRoles(userRoles || []);
+          console.log('Fetched roles:', userRoles);
         } catch (error) {
           console.error('Error fetching user roles:', error);
         }
@@ -38,10 +42,23 @@ const App = () => {
     logout({ returnTo: window.location.origin });
   };
 
-  // handling sorting requests to moce files into different folders
+  const fetchCommentData = async (uniqueID) => {
+    try {
+      const token = await getAccessTokenSilently();
+      const response = await axios.get(`${apiUrl}/retrievecomment/${uniqueID}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log('Comment data fetched:', response.data); // Log the fetched data
+      setCommentData(response.data);
+    } catch (error) {
+      console.error('Error fetching comment data:', error);
+    }
+  };
+
   const handleAction = async (action) => {
     try {
-      // Set loading to true before API call
       if (randomImageRef.current) {
         randomImageRef.current.setLoading(true);
       }
@@ -66,10 +83,8 @@ const App = () => {
     }
   };
 
-  // handling requests to remove a file
   const removeAction = async () => {
     try {
-      // Set loading to true before API call
       if (randomImageRef.current) {
         randomImageRef.current.setLoading(true);
       }
@@ -94,6 +109,12 @@ const App = () => {
     }
   };
 
+  const handleCommentSave = (formData) => {
+    console.log('Comment saved');
+    console.log('Form Data:', formData);
+    toggleModal(); // Close modal after save
+  };
+
   const isReviewer = roles.includes('reviewer');
   const canViewImage = roles.includes('user') || roles.includes('reviewer');
 
@@ -116,12 +137,14 @@ const App = () => {
             </Routes>
           )}
         </div>
+        <CommentModal isOpen={isModalOpen} onSave={handleCommentSave} onClose={toggleModal} imageID={imageId}/>
         <div className="footer">
           <FooterNav
             isAuthenticated={isAuthenticated}
             isReviewer={isReviewer}
             handleAction={handleAction}            
             removeAction={removeAction}
+            toggleModal={toggleModal} 
           />
         </div>
       </div>
