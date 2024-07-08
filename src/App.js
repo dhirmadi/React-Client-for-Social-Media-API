@@ -5,7 +5,7 @@ import RandomImage from './components/RandomImage';
 import HeaderNav from './components/HeaderNav';
 import FooterNav from './components/FooterNav';
 import CommentModal from './components/CommentModal';
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode'; // Corrected import statement
 import axios from 'axios';
 import './App.css';
 
@@ -64,9 +64,18 @@ const App = () => {
     }
   };
 
-  const handleCommentSave = (formData) => {
-    console.log('Comment saved');
-    console.log('Form Data:', formData);
+  const handleCommentSave = async (formData) => {
+    try {
+      const token = await getAccessTokenSilently();
+      const response = await axios.post(`${apiUrl}/storecomment`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log('Comment saved:', response.data);
+    } catch (error) {
+      console.error('Error saving comment:', error);
+    }
     toggleModal(); // Close modal after save
   };
 
