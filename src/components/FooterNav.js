@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom'; // Import useLocation
 
-function FooterNav({ isAuthenticated, isReviewer, handleAction }) {
+function FooterNav({ isAuthenticated, isReviewer, handleAction, removeAction }) {
   const location = useLocation(); // Use useLocation to get the current location
 
   if (!isAuthenticated || !isReviewer) {
@@ -26,10 +26,15 @@ function FooterNav({ isAuthenticated, isReviewer, handleAction }) {
       case '/rework':
         // Example buttons for commenting
         return (
-          <button className="footer-button">No function</button>
+          <button className="footer-button" onClick={() => handleAction('delete')}>Discard</button>
         );
       case '/delete':
-        return <button className="footer-button" >No function</button>;
+        return (
+          <>
+            <button className="footer-button" onClick={() => handleAction('rework')}>Change</button>
+            <button className="footer-button" onClick={() => removeAction()}>Delete from Dropbox</button>
+          </>
+        );
       default:
         // Example buttons for default case
         return (

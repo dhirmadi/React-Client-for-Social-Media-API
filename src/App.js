@@ -38,6 +38,7 @@ const App = () => {
     logout({ returnTo: window.location.origin });
   };
 
+  // handling sorting requests to moce files into different folders
   const handleAction = async (action) => {
     try {
       // Set loading to true before API call
@@ -59,6 +60,34 @@ const App = () => {
       fetchImage(); // Fetch a new image after the action is completed
     } catch (error) {
       console.error(`Error performing ${action} action:`, error);
+      if (error.response) {
+        console.error('Error response data:', error.response.data);
+      }
+    }
+  };
+
+  // handling requests to remove a file
+  const removeAction = async () => {
+    try {
+      // Set loading to true before API call
+      if (randomImageRef.current) {
+        randomImageRef.current.setLoading(true);
+      }
+
+      const token = await getAccessTokenSilently();
+      const payload = { uniqueID: imageId };
+      await axios.post(
+        `${apiUrl}/delete`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      fetchImage(); // Fetch a new image after the action is completed
+    } catch (error) {
+      console.error(`Error removing file:`, error);
       if (error.response) {
         console.error('Error response data:', error.response.data);
       }
@@ -91,7 +120,8 @@ const App = () => {
           <FooterNav
             isAuthenticated={isAuthenticated}
             isReviewer={isReviewer}
-            handleAction={handleAction}
+            handleAction={handleAction}            
+            removeAction={removeAction}
           />
         </div>
       </div>
