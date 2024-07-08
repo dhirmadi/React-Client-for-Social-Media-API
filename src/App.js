@@ -13,6 +13,7 @@ const App = () => {
   const { isAuthenticated, loginWithRedirect, logout, getAccessTokenSilently } = useAuth0();
   const [roles, setRoles] = useState([]);
   const [imageId, setImageId] = useState(null);
+  const [imageURL, setImageURL] = useState(null);
   const [fetchImage, setFetchImage] = useState(() => () => {});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [imageMetadata, setImageMetadata] = useState(null);
@@ -93,15 +94,15 @@ const App = () => {
         <div className="content">
           {isAuthenticated && canViewImage && (
             <Routes>
-              <Route path="/" element={<RandomImage ref={randomImageRef} setImageId={setImageId} setFetchImage={setFetchImage} folder="default" />} />
-              <Route path="/review" element={<RandomImage ref={randomImageRef} setImageId={setImageId} setFetchImage={setFetchImage} folder="review" />} />
-              <Route path="/approve" element={<RandomImage ref={randomImageRef} setImageId={setImageId} setFetchImage={setFetchImage} folder="approve" />} />
-              <Route path="/delete" element={<RandomImage ref={randomImageRef} setImageId={setImageId} setFetchImage={setFetchImage} folder="delete" />} />
-              <Route path="/rework" element={<RandomImage ref={randomImageRef} setImageId={setImageId} setFetchImage={setFetchImage} folder="rework" />} />
+              <Route path="/" element={<RandomImage ref={randomImageRef}  setImageURL={setImageURL} setImageId={setImageId} setFetchImage={setFetchImage} folder="default" />} />
+              <Route path="/review" element={<RandomImage ref={randomImageRef}  setImageURL={setImageURL} setImageId={setImageId} setFetchImage={setFetchImage} folder="review" />} />
+              <Route path="/approve" element={<RandomImage ref={randomImageRef}  setImageURL={setImageURL} setImageId={setImageId} setFetchImage={setFetchImage} folder="approve" />} />
+              <Route path="/delete" element={<RandomImage ref={randomImageRef}  setImageURL={setImageURL} setImageId={setImageId} setFetchImage={setFetchImage} folder="delete" />} />
+              <Route path="/rework" element={<RandomImage ref={randomImageRef}  setImageURL={setImageURL} setImageId={setImageId} setFetchImage={setFetchImage} folder="rework" />} />
             </Routes>
           )}
         </div>
-        <CommentModal isOpen={isModalOpen} onSave={handleCommentSave} onClose={toggleModal} imageID={imageId} imageMetadata={imageMetadata} />
+        <CommentModal isOpen={isModalOpen} onSave={handleCommentSave} onClose={toggleModal} imageID={imageId} imageMetadata={imageMetadata} imageData={{ id: imageId, image_url: imageURL }}/>
         <div className="footer">
           <FooterNav
             isAuthenticated={isAuthenticated}

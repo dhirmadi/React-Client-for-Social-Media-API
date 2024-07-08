@@ -4,7 +4,7 @@ import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
 import './RandomImage.css';
 
-const RandomImage = forwardRef(({ setImageId, setFetchImage, folder }, ref) => {
+const RandomImage = forwardRef(({ setImageId, setFetchImage, setImageURL, folder }, ref) => {
   const { getAccessTokenSilently, isAuthenticated, loginWithRedirect } = useAuth0();
   const [imageData, setImageData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -38,12 +38,13 @@ const RandomImage = forwardRef(({ setImageId, setFetchImage, folder }, ref) => {
       // Image is preloaded, update state
       setImageData(response.data); // Update the actual image data when the image is preloaded
       setImageId(response.data.id); // Pass the image ID to the parent component
+      setImageURL(response.data.image_url); // Pass the image URL to the parent component
       setLoading(false);
     } catch (error) {
       console.error('Error fetching the image:', error);
       setLoading(false); // Stop loading on error
     }
-  }, [apiUrl, getAccessTokenSilently, preloadImage, setImageId, folder]);
+  }, [apiUrl, getAccessTokenSilently, preloadImage, setImageId, setImageURL, folder]);
 
   useEffect(() => {
     if (isAuthenticated) {

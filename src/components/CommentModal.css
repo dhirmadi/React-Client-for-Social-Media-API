@@ -1,3 +1,5 @@
+/* CommentModal.css */
+
 /* Modal Backdrop */
 .modal-overlay {
   position: fixed;
@@ -45,4 +47,14 @@
 
 .modal-content button[type="button"] {
   background-color: #6c757d; /* Different color for the close button */
+}
+
+.tagline-container {
+  display: flex;
+  align-items: center;
+}
+
+.tagline-container input {
+  flex: 1;
+  margin-right: 10px;
 }
