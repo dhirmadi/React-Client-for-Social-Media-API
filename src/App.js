@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import RandomImage from './components/RandomImage';
@@ -15,6 +15,7 @@ const App = () => {
   const [imageId, setImageId] = useState(null);
   const [fetchImage, setFetchImage] = useState(() => () => {});
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [imageMetadata, setImageMetadata] = useState(null);
   const toggleModal = () => setIsModalOpen(!isModalOpen);
   const apiUrl = process.env.REACT_APP_API_URL;
   const apiNamespace = process.env.REACT_APP_API_NAMESPACE;
@@ -42,7 +43,7 @@ const App = () => {
     logout({ returnTo: window.location.origin });
   };
 
-  const fetchCommentData = async (uniqueID) => {
+  const fetchCommentData = useCallback(async (uniqueID) => {
     try {
       const token = await getAccessTokenSilently();
       const response = await axios.get(`${apiUrl}/retrievecomment/${uniqueID}`, {
@@ -50,62 +51,16 @@ const App = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log('Comment data fetched:', response.data); // Log the fetched data
-      setCommentData(response.data);
+      setImageMetadata(response.data);
+      setIsModalOpen(true); // Open modal after fetching the data
     } catch (error) {
       console.error('Error fetching comment data:', error);
     }
-  };
+  }, [apiUrl, getAccessTokenSilently]);
 
-  const handleAction = async (action) => {
-    try {
-      if (randomImageRef.current) {
-        randomImageRef.current.setLoading(true);
-      }
-
-      const token = await getAccessTokenSilently();
-      const payload = { action, uniqueID: imageId };
-      await axios.post(
-        `${apiUrl}/move`,
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      fetchImage(); // Fetch a new image after the action is completed
-    } catch (error) {
-      console.error(`Error performing ${action} action:`, error);
-      if (error.response) {
-        console.error('Error response data:', error.response.data);
-      }
-    }
-  };
-
-  const removeAction = async () => {
-    try {
-      if (randomImageRef.current) {
-        randomImageRef.current.setLoading(true);
-      }
-
-      const token = await getAccessTokenSilently();
-      const payload = { uniqueID: imageId };
-      await axios.post(
-        `${apiUrl}/delete`,
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      fetchImage(); // Fetch a new image after the action is completed
-    } catch (error) {
-      console.error(`Error removing file:`, error);
-      if (error.response) {
-        console.error('Error response data:', error.response.data);
-      }
+  const handleCommentButtonClick = () => {
+    if (imageId) {
+      fetchCommentData(imageId);
     }
   };
 
@@ -129,22 +84,22 @@ const App = () => {
         <div className="content">
           {isAuthenticated && canViewImage && (
             <Routes>
-              <Route path="/" element={<RandomImage ref={randomImageRef} setImageId={setImageId} setFetchImage={setFetchImage} folder="default"/>} />
-              <Route path="/review" element={<RandomImage ref={randomImageRef} setImageId={setImageId} setFetchImage={setFetchImage} folder="review"/>} />
-              <Route path="/approve" element={<RandomImage ref={randomImageRef} setImageId={setImageId} setFetchImage={setFetchImage} folder="approve"/>} />
-              <Route path="/delete" element={<RandomImage ref={randomImageRef} setImageId={setImageId} setFetchImage={setFetchImage} folder="delete"/>} />
-              <Route path="/rework" element={<RandomImage ref={randomImageRef} setImageId={setImageId} setFetchImage={setFetchImage} folder="rework"/>} />
+              <Route path="/" element={<RandomImage ref={randomImageRef} setImageId={setImageId} setFetchImage={setFetchImage} folder="default" />} />
+              <Route path="/review" element={<RandomImage ref={randomImageRef} setImageId={setImageId} setFetchImage={setFetchImage} folder="review" />} />
+              <Route path="/approve" element={<RandomImage ref={randomImageRef} setImageId={setImageId} setFetchImage={setFetchImage} folder="approve" />} />
+              <Route path="/delete" element={<RandomImage ref={randomImageRef} setImageId={setImageId} setFetchImage={setFetchImage} folder="delete" />} />
+              <Route path="/rework" element={<RandomImage ref={randomImageRef} setImageId={setImageId} setFetchImage={setFetchImage} folder="rework" />} />
             </Routes>
           )}
         </div>
-        <CommentModal isOpen={isModalOpen} onSave={handleCommentSave} onClose={toggleModal} imageID={imageId}/>
+        <CommentModal isOpen={isModalOpen} onSave={handleCommentSave} onClose={toggleModal} imageID={imageId} imageMetadata={imageMetadata} />
         <div className="footer">
           <FooterNav
             isAuthenticated={isAuthenticated}
             isReviewer={isReviewer}
-            handleAction={handleAction}            
-            removeAction={removeAction}
-            toggleModal={toggleModal} 
+            handleAction={handleCommentButtonClick}            
+            removeAction={handleCommentButtonClick}
+            toggleModal={handleCommentButtonClick} 
           />
         </div>
       </div>
