@@ -44,6 +44,30 @@ const App = () => {
     logout({ returnTo: window.location.origin });
   };
 
+  const handleAction = async (action) => {
+    try {
+      // Set loading to true before API call
+      if (randomImageRef.current) {
+        randomImageRef.current.setLoading(true);
+      }
+
+      const token = await getAccessTokenSilently();
+      const payload = { action, uniqueID: imageId };
+      await axios.post(
+        `${apiUrl}/move`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      fetchImage(); // Fetch a new image after the action is completed
+    } catch (error) {
+      console.error(`Error performing ${action} action:`, error);
+    }
+  }
+  
   const fetchCommentData = useCallback(async (uniqueID) => {
     try {
       const token = await getAccessTokenSilently();
@@ -80,6 +104,34 @@ const App = () => {
     toggleModal(); // Close modal after save
   };
 
+   // handling requests to remove a file
+   const removeAction = async () => {
+    try {
+      // Set loading to true before API call
+      if (randomImageRef.current) {
+        randomImageRef.current.setLoading(true);
+      }
+
+      const token = await getAccessTokenSilently();
+      const payload = { uniqueID: imageId };
+      await axios.post(
+        `${apiUrl}/delete`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      fetchImage(); // Fetch a new image after the action is completed
+    } catch (error) {
+      console.error(`Error removing file:`, error);
+      if (error.response) {
+        console.error('Error response data:', error.response.data);
+      }
+    }
+  };
+
   const isReviewer = roles.includes('reviewer');
   const canViewImage = roles.includes('user') || roles.includes('reviewer');
 
@@ -107,8 +159,8 @@ const App = () => {
           <FooterNav
             isAuthenticated={isAuthenticated}
             isReviewer={isReviewer}
-            handleAction={handleCommentButtonClick}            
-            removeAction={handleCommentButtonClick}
+            handleAction={handleAction}            
+            removeAction={removeAction}
             toggleModal={handleCommentButtonClick} 
           />
         </div>
