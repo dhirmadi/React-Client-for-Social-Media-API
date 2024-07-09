@@ -59,7 +59,7 @@ const CommentModal = ({ isOpen, onSave, onClose, imageID, imageMetadata, imageDa
     try {
       if (tagline) {
         const token = await getAccessTokenSilently();
-        const response = await axios.post(`${apiUrl}/generatedescription`, { systemcontent, rolecontent, prompt:tagline }, {
+        const response = await axios.post(`${apiUrl}/generatedescription`, { systemcontent, rolecontent:"Write me a caption of about 100-150 characters without hashtags for my photograph that shows ", prompt:tagline }, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -76,7 +76,7 @@ const CommentModal = ({ isOpen, onSave, onClose, imageID, imageMetadata, imageDa
     try {
       if (description) {
         const token = await getAccessTokenSilently();
-        const response = await axios.post(`${apiUrl}/generatedescription`, { systemcontent, rolecontent:"Generate five amazing tags for a photo with the following description for social media: ", prompt:description }, {
+        const response = await axios.post(`${apiUrl}/generatedescription`, { systemcontent, rolecontent:"Generate five amazing tags, no numbering, for a photo with the following description for social media: ", prompt:description }, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
