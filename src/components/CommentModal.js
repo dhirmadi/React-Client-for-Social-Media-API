@@ -9,6 +9,8 @@ const CommentModal = ({ isOpen, onSave, onClose, imageID, imageMetadata, imageDa
   const [tagline, setTagline] = useState('');
   const [hashtags, setHashtags] = useState('');
   const apiUrl = process.env.REACT_APP_API_URL;
+  const systemcontent = process.env.REACT_APP_OPENAI_SYSTEM_CONTENT;
+  const rolecontent = process.env.REACT_APP_OPENAI_ROLE_CONTENT;
 
   useEffect(() => {
     if (imageMetadata) {
@@ -53,6 +55,39 @@ const CommentModal = ({ isOpen, onSave, onClose, imageID, imageMetadata, imageDa
     }
   };
 
+  const handleDescription = async () => {
+    try {
+      if (tagline) {
+        const token = await getAccessTokenSilently();
+        const response = await axios.post(`${apiUrl}/generatedescription`, { systemcontent, rolecontent, prompt:tagline }, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const descriptionWithoutQuotes = response.data.description.replace(/"/g, ''); // Remove all double quotes
+        setDescription(descriptionWithoutQuotes);
+      }
+    } catch (error) {
+      console.error('Error getting description:', error);
+    }
+  };
+
+  const handleTags = async () => {
+    try {
+      if (description) {
+        const token = await getAccessTokenSilently();
+        const response = await axios.post(`${apiUrl}/generatedescription`, { systemcontent, rolecontent:"Generate five amazing tags for a photo with the following description for social media: ", prompt:description }, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setHashtags(response.data.description);
+      }
+    } catch (error) {
+      console.error('Error getting description:', error);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -62,14 +97,7 @@ const CommentModal = ({ isOpen, onSave, onClose, imageID, imageMetadata, imageDa
           <h2>Comment</h2>
         </div>
         <div className="modal-body">
-          <label htmlFor="description">Description</label>
-          <input
-            type="text"
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-          <label htmlFor="tagline">Tagline</label>
+        <label htmlFor="tagline">Tagline</label>         
           <div className="tagline-container">
             <input
               type="text"
@@ -79,13 +107,27 @@ const CommentModal = ({ isOpen, onSave, onClose, imageID, imageMetadata, imageDa
             />
             <button type="button" onClick={handleIdentify}>Identify</button>
           </div>
+          <label htmlFor="description">Description</label>
+          <div className="tagline-container">
+            <input
+              type="text"
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+            <button type="button" onClick={handleDescription}>Generate</button>
+          </div> 
+          
           <label htmlFor="hashtags">Hashtags</label>
-          <input
-            type="text"
-            id="hashtags"
-            value={hashtags}
-            onChange={(e) => setHashtags(e.target.value)}
-          />
+          <div className="tagline-container">
+            <input
+              type="text"
+              id="hashtags"
+              value={hashtags}
+              onChange={(e) => setHashtags(e.target.value)}
+            />
+            <button type="button" onClick={handleTags}>Tag</button>
+            </div>
         </div>
         <div className="modal-footer">
           <button type="button" onClick={onClose}>Close</button>

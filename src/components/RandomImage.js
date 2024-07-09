@@ -21,6 +21,7 @@ const RandomImage = forwardRef(({ setImageId, setFetchImage, setImageURL, folder
 
   const fetchImage = useCallback(async () => {
     try {
+      setLoading(true); // Show the spinner immediately
       const token = await getAccessTokenSilently();
       const response = await axios.get(`${apiUrl}/image`, {
         headers: {
@@ -61,7 +62,6 @@ const RandomImage = forwardRef(({ setImageId, setFetchImage, setImageURL, folder
 
   const handleClick = () => {
     if (!loading) {
-      setLoading(true); // Show the spinner immediately
       fetchImage(); // Load a new image when clicked, if not currently loading
     }
   };
