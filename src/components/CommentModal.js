@@ -59,9 +59,6 @@ const CommentModal = ({ isOpen, onSave, onClose, imageID, imageMetadata, imageDa
     try {
       if (tagline) {
         const token = await getAccessTokenSilently();
-        console.log('Fetching comment data for:', tagline);
-        console.log('Token:', token);
-        console.log(`${apiUrl}/generatedescription/`);
         const response = await axios.post(`${apiUrl}/generatedescription`, { systemcontent, rolecontent:"Write me a caption of about 100-150 characters without hashtags for my photograph that shows ", prompt:tagline }, {
           headers: {
             Authorization: `Bearer ${token}`,
