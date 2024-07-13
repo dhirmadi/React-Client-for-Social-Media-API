@@ -77,6 +77,7 @@ const App = () => {
         },
       });
       setImageMetadata(response.data);
+      console.log('Fetched comment data:', response.data);
       setIsModalOpen(true); // Open modal after fetching the data
     } catch (error) {
       console.error('Error fetching comment data:', error);
