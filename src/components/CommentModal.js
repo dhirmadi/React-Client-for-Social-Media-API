@@ -42,6 +42,7 @@ const CommentModal = ({ isOpen, onSave, onClose, imageID, imageMetadata, imageDa
   const handleIdentify = async () => {
     try {
       if (imageData && imageData.image_url) {
+        console.log('Identifying image:', imageData.image_url);
         const token = await getAccessTokenSilently();
         const response = await axios.post(`${apiUrl}/identifyimage`, { image_link: imageData.image_url }, {
           headers: {
