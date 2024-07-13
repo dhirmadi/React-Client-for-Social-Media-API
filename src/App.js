@@ -45,6 +45,10 @@ const App = () => {
 
   const fetchCommentData = useCallback(async (uniqueID) => {
     try {
+      // Set loading to true before API call
+      if (randomImageRef.current) {
+        randomImageRef.current.setLoading(true);
+      }
       const token = await getAccessTokenSilently();
       const response = await axios.get(`${apiUrl}/retrievecomment/${uniqueID}`, {
         headers: {
@@ -55,6 +59,11 @@ const App = () => {
       setIsModalOpen(true); // Open modal after fetching the data
     } catch (error) {
       console.error('Error fetching comment data:', error);
+    } finally {
+      // Set loading to false after API call
+      if (randomImageRef.current) {
+        randomImageRef.current.setLoading(false);
+      }
     }
   }, [apiUrl, getAccessTokenSilently]);
 
@@ -66,6 +75,10 @@ const App = () => {
 
   const handleCommentSave = async (formData) => {
     try {
+      // Set loading to true before API call
+      if (randomImageRef.current) {
+        randomImageRef.current.setLoading(true);
+      }
       const token = await getAccessTokenSilently();
       const response = await axios.post(`${apiUrl}/storecomment`, formData, {
         headers: {
@@ -75,6 +88,11 @@ const App = () => {
       console.log('Comment saved:', response.data);
     } catch (error) {
       console.error('Error saving comment:', error);
+    } finally {
+      // Set loading to false after API call
+      if (randomImageRef.current) {
+        randomImageRef.current.setLoading(false);
+      }
     }
     toggleModal(); // Close modal after save
   };
