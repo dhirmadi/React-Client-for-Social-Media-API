@@ -58,3 +58,9 @@
   flex: 1;
   margin-right: 10px;
 }
+
+button:disabled {
+  background-color: #cccccc; /* Light grey */
+  color: #666666; /* Darker grey */
+  cursor: not-allowed;
+}
