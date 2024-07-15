@@ -26,17 +26,19 @@ const CommentModal = ({ isOpen, onSave, onClose, imageID, imageMetadata, imageDa
     try {
       setIsIdentifying(true);
       const token = await getAccessTokenSilently();
+      console.log('Saving metadata:', { imageID, description, tagline, hashtags, nsfw });
       await axios.post(`${apiUrl}/storecomment`, {
         imageID,
         description,
         tagline,
         hashtags,
+        nsfw
       }, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      onSave({ imageID, description, tagline, hashtags });
+      onSave({ imageID, description, tagline, hashtags, nsfw });
     } catch (error) {
       console.error('Error saving metadata:', error);
     } finally {
