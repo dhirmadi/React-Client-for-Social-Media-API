@@ -13,15 +13,19 @@ function FooterNav({ isAuthenticated, isReviewer, handleAction, removeAction, to
       case '/review':
         return (
           <>
-            <button className="footer-button" onClick={() => handleAction('approve')}>Publish</button>
+            <button className="footer-button" onClick={() => handleAction('approve')}>Approve</button>
             <button className="footer-button" onClick={() => handleAction('rework')}>Change</button>
-            <button className="footer-button" onClick={() => handleAction('delete')}>Discard</button>
+            <button className="footer-button" onClick={() => handleAction('delete')}>Delete</button>
           </>
         );
       case '/approve':
         // Example buttons for publishing
         return (
-          <button className="footer-button" onClick={toggleModal}>Comment</button>
+          <>
+            <button className="footer-button" onClick={() => handleAction('rework')}>Change</button>
+            <button className="footer-button" onClick={toggleModal}>Comment</button>
+            <button className="footer-button" onClick={() => handleAction('publish')}>Queue for Publish</button>
+          </>
         );      
       case '/rework':
         // Example buttons for commenting
