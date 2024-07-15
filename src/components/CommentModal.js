@@ -8,6 +8,7 @@ const CommentModal = ({ isOpen, onSave, onClose, imageID, imageMetadata, imageDa
   const [description, setDescription] = useState('');
   const [tagline, setTagline] = useState('');
   const [hashtags, setHashtags] = useState('');
+  const [nsfw, setNsfw] = useState(true);
   const apiUrl = process.env.REACT_APP_API_URL;
   const systemcontent = process.env.REACT_APP_OPENAI_SYSTEM_CONTENT;
   // const rolecontent = process.env.REACT_APP_OPENAI_ROLE_CONTENT;
@@ -142,6 +143,15 @@ const CommentModal = ({ isOpen, onSave, onClose, imageID, imageMetadata, imageDa
             />
             <button type="button" onClick={handleTags} disabled={isIdentifying}>Hash</button>
             </div>
+          <div className="nsfw-checkbox-container">
+            <input
+              type="checkbox"
+              id="nsfw"
+              checked={nsfw}
+              onChange={(e) => setNsfw(e.target.checked)}
+            />
+            <label htmlFor="nsfw">NSFW</label>
+          </div>
         </div>
         <div className="modal-footer">
           <button type="button" onClick={onClose}>Close</button>
