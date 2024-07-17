@@ -26,7 +26,7 @@ const CommentModal = ({ isOpen, onSave, onClose, imageID, imageMetadata, imageDa
     try {
       setIsIdentifying(true);
       const token = await getAccessTokenSilently();
-      console.log('Saving metadata:', { imageID, description, tagline, hashtags, nsfw });
+      // console.log('Saving metadata:', { imageID, description, tagline, hashtags, nsfw });
       await axios.post(`${apiUrl}/storecomment`, {
         imageID,
         description,
@@ -50,7 +50,7 @@ const CommentModal = ({ isOpen, onSave, onClose, imageID, imageMetadata, imageDa
     try {
       setIsIdentifying(true);
       if (imageData && imageData.image_url) {
-        console.log('Identifying image:', imageData.image_url);
+        // console.log('Identifying image:', imageData.image_url);
         const token = await getAccessTokenSilently();
         const response = await axios.post(`${apiUrl}/identifyimage`, { image_link: imageData.image_url }, {
           headers: {
@@ -58,6 +58,8 @@ const CommentModal = ({ isOpen, onSave, onClose, imageID, imageMetadata, imageDa
           },
         });
         setTagline(response.data.mood);
+        handleDescription();
+        handleTags();
       }
     } catch (error) {
       console.error('Error identifying image:', error);
@@ -71,7 +73,7 @@ const CommentModal = ({ isOpen, onSave, onClose, imageID, imageMetadata, imageDa
       setIsIdentifying(true);
       if (tagline) {
         const token = await getAccessTokenSilently();
-        const response = await axios.post(`${apiUrl}/generatedescription`, { systemcontent, rolecontent:"Write me a caption of about 100-150 characters without hashtags for my photograph that shows ", prompt:tagline }, {
+        const response = await axios.post(`${apiUrl}/generatedescription`, { systemcontent, rolecontent:"Write me a beautiful caption of about 100-200 characters, so the picture becomes trending on instagram. Do not add any hastags. The image shows ", prompt:tagline }, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -91,7 +93,7 @@ const CommentModal = ({ isOpen, onSave, onClose, imageID, imageMetadata, imageDa
       setIsIdentifying(true);
       if (description) {
         const token = await getAccessTokenSilently();
-        const response = await axios.post(`${apiUrl}/generatedescription`, { systemcontent, rolecontent:"Generate five amazing tags, no numbering, for a photo with the following description for social media: ", prompt:description }, {
+        const response = await axios.post(`${apiUrl}/generatedescription`, { systemcontent, rolecontent:"Generate seven amazing hashtags trending on instagram, only return the tags separated by a coma, for a photo with the following description for social media: ", prompt:description }, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -104,6 +106,7 @@ const CommentModal = ({ isOpen, onSave, onClose, imageID, imageMetadata, imageDa
       setIsIdentifying(false); // After the API call
     }
   };
+
 
   if (!isOpen) return null;
 
